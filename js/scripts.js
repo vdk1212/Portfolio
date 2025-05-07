@@ -18,6 +18,8 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		rewind: false,
 		height: '100vh',
 		direction: 'ttb',
+		wheelSleep: 1000,
+		wheelMinThreshold: 20,
 		easing: 'cubic-bezier(.14, .72, .18, .84)',
 		breakpoints: {
 			1199: {
