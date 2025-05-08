@@ -468,7 +468,7 @@ video {
 }
 
 .splide__pagination__page,
-.play {
+.play-btn {
 	cursor: pointer;
 }
 
@@ -581,11 +581,62 @@ video {
 	background-color: var(--dark);
 }
 
+@keyframes pulse {
+
+	0% {
+		opacity: 0;
+		transform: translate3d(-50%, -50%, 0) scale(0);
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate3d(-50%, -50%, 0) scale(2);
+	}
+}
+
+@keyframes pulseIn {
+
+	0% {
+		transform: scale(.84);
+	}
+
+	83% {
+		transform: scale(1);
+	}
+
+	84% {
+		transform: scale(.84);
+	}
+
+	100% {
+		transform: scale(.84);
+	}
+}
+
+.play-btn:before {
+	top: 50%;
+	left: 50%;
+	opacity: 0;
+	content: '';
+	width: 200px;
+	height: 200px;
+	position: absolute;
+	border-radius: 50%;
+	border: 2px solid var(--light);
+	transform: translate3d(-50%, -50%, 0) scale(0);
+	animation: pulse calc(var(--duration) * 2) var(--easing) var(--duration) infinite;
+}
+
 .play-btn svg {
 	width: 40px;
 	fill: var(--white);
-	display inline-block;
 	margin-right: 1rem;
+	display inline-block;
+	animation: pulseIn calc(var(--duration) * 2) var(--easing) var(--duration) infinite;
 }
 
 a,
