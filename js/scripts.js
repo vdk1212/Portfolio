@@ -8,6 +8,7 @@ var n,t;n=this,t=function(){"use strict";var v="(prefers-reduced-motion: reduce)
 let slider = document.querySelector( '.slider.splide' );
 
 document.addEventListener( 'DOMContentLoaded', function () {
+
 	const splide = new Splide( slider, {
 		gap: 0,
 		speed: 720,
@@ -31,9 +32,48 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	const realSlides = Array.from( document.querySelectorAll( '.splide__slide' ) ).filter( slide => !slide.classList.contains( 'is-clone' ) );
 	const videos = realSlides.map( slide => slide.querySelector( 'video' ) );
 
+	let isUserInteracted = false;
+	let isPlaying = false;
+
+	const playButton = document.querySelector( '.play-btn' );
+
+	function fadeOut( element, duration = 400 ) {
+		let opacity = 1;
+		const interval = 50;
+		const gap = interval / duration;
+
+		function fade() {
+			opacity -= gap;
+			if ( opacity <= 0 ) {
+				opacity = 0;
+				element.style.opacity = opacity;
+				element.style.display = 'none';
+			} else {
+				element.style.opacity = opacity;
+				requestAnimationFrame( fade );
+			}
+		}
+
+		requestAnimationFrame( fade );
+	}
+
+	playButton.addEventListener( 'click', () => {
+
+		if ( !isUserInteracted ) {
+			isUserInteracted = true;
+			fadeOut( playButton, 1200 );
+
+			if ( !isPlaying ) {
+				playCurrentVideo( 0 );
+				isPlaying = true;
+			}
+		}
+	} );
+
 	function playCurrentVideo( index ) {
 		videos.forEach( ( video, i ) => {
 			if ( !video ) return;
+
 			video.pause();
 			video.currentTime = 0;
 			video.muted = true;
@@ -43,27 +83,29 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		const currentVideo = videos[ index ];
 
 		if ( currentVideo ) {
-			currentVideo.muted = false;
+			currentVideo.setAttribute( 'playsinline', '' );
+			currentVideo.load();
+
+			if ( isUserInteracted || index > 0 ) {
+				currentVideo.muted = false;
+			}
 
 			const playPromise = currentVideo.play();
 
 			if ( playPromise !== undefined ) {
-				playPromise.then( () => {} ).catch( error => {
-					console.warn( 'Автоплей заблоковано. Пробую muted режим…' );
+				playPromise.catch( () => {
 					currentVideo.muted = true;
-					currentVideo.play().catch( err => console.error( 'Muted play failed too:', err ) );
+					currentVideo.play().catch( err => {
+						console.error( 'Muted play also failed:', err );
+					} );
 				} );
 			}
 
 			currentVideo.onended = () => {
-				splide.go( '>' );
+				splide.go( '>' ); // перейти до наступного слайда
 			};
 		}
 	}
-
-	splide.on( 'mounted', () => {
-		playCurrentVideo( 0 );
-	} );
 
 	splide.on( 'move', ( newIndex ) => {
 		const realIndex = splide.Components.Slides.getAt( newIndex ).slide.dataset.index;
@@ -72,6 +114,10 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 	realSlides.forEach( ( slide, i ) => {
 		slide.dataset.index = i;
+	} );
+
+	splide.on( 'mounted', () => {
+		// Відео НЕ запускається автоматично, очікує на клік
 	} );
 
 	splide.mount();

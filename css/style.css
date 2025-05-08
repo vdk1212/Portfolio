@@ -110,9 +110,6 @@ video {
 	position: absolute;
 }
 
-/*////////////*/
-/* TYPOGRAPHY */
-/*////////////*/
 .text-center {
 	text-align: center;
 }
@@ -563,6 +560,32 @@ video {
 	.splide__pagination li:not(:last-child) {
 		margin-bottom: 1rem;
 	}
+}
+
+.play-btn {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 11;
+	display: flex;
+	position: fixed;
+	font-size: 38px;
+	font-weight: 700;
+	line-height: 34px;
+	color: var(--white);
+	align-items: center;
+	letter-spacing: 4px;
+	justify-content: center;
+	text-transform: uppercase;
+	background-color: var(--dark);
+}
+
+.play-btn svg {
+	width: 40px;
+	fill: var(--white);
+	display inline-block;
+	margin-right: 1rem;
 }
 
 a,
