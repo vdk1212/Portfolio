@@ -80,30 +80,34 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			video.onended = null;
 		} );
 
-		const currentVideo = videos[ index ];
+		const currentVideo = videos[index];
 
 		if ( currentVideo ) {
 			currentVideo.setAttribute( 'playsinline', '' );
-			currentVideo.load();
 
-			if ( isUserInteracted || index > 0 ) {
-				currentVideo.muted = false;
-			}
+			// Спробуємо зі звуком, якщо була взаємодія
+			currentVideo.muted = !isUserInteracted;
 
 			const playPromise = currentVideo.play();
 
 			if ( playPromise !== undefined ) {
-				playPromise.catch( () => {
+				playPromise.then( () => {
+					if ( isUserInteracted ) {
+						currentVideo.muted = false;
+					}
+					currentVideo.onended = () => {
+						splide.go( '>' );
+					};
+				} ).catch( ( err ) => {
+					console.warn( 'Play failed, fallback to muted:', err );
 					currentVideo.muted = true;
-					currentVideo.play().catch( err => {
-						console.error( 'Muted play also failed:', err );
-					} );
+					currentVideo.play().then(() => {
+						currentVideo.onended = () => {
+							splide.go( '>' );
+						};
+					} ).catch( err2 => console.error( 'Muted play also failed:', err2 ) );
 				} );
 			}
-
-			currentVideo.onended = () => {
-				splide.go( '>' ); // перейти до наступного слайда
-			};
 		}
 	}
 
